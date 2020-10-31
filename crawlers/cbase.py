@@ -6,8 +6,8 @@
 
 
 class CrawlerBase:
-    def __init__(self):
-        pass
+
+    DEFAULT_HTML_PARSER = 'lxml'
 
     def get_chapter(self, chap_num: int) -> dict:
         """
@@ -31,10 +31,10 @@ class CrawlerBase:
         """
         raise NotImplementedError
 
-    def search(self, keyword: str) -> dict:
+    def search(self) -> dict:
         """
-        Searches for `keyword` in the corresponding website and returns a dictionary
-        object of the results
+        Searches for the novel (saved as instance variable) in the corresponding
+        website and returns a dictionary object of the results
         """
         raise NotImplementedError
 
