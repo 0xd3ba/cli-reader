@@ -14,9 +14,6 @@ class CrawlerFactory:
         'wuxiaworld': crawlers.wuxiaworld.WuxiaWorldCrawler
     }
 
-    def __init__(self) -> None:
-        raise NotImplementedError
-
     def get_crawler(self, novel):
         """
         Return a crawler instance of the default website. We are guaranteed that it's a
