@@ -9,6 +9,7 @@ class CommandBase:
 
     def __init__(self):
         self.arg_parser = argparse.ArgumentParser()  # The argument parser for the command
+        self.description = None
 
     def help(self):
         """
@@ -21,7 +22,7 @@ class CommandBase:
         """
         raise NotImplementedError
 
-    def execute(self, **kwargs):
+    def execute(self, cmd_args:str):
         """
         Executes the command with the given keyword arguments
         """
@@ -35,7 +36,7 @@ class CommandBase:
         """
         raise NotImplementedError
 
-    def _parse_result(self, **kwargs):
+    def _parse_result(self, result):
         """
         Responsible for parsing the result of the command and returning it
         """

@@ -4,7 +4,10 @@ import shell.cmdbase
 
 class SetWebCommand(shell.cmdbase.CommandBase):
     """
-    TODO: Add information about the command
+    setweb -- Sets the website to use for searches
+    Usage: setweb [ -w | --website ] <website>
+
+    Example: setweb -w wuxiaworld
     """
 
     def __init__(self):
@@ -14,11 +17,11 @@ class SetWebCommand(shell.cmdbase.CommandBase):
     def help(self):
         pass
 
-    def execute(self, **kwargs):
+    def execute(self, cmd_args):
         pass
 
     def _parse_args(self, cmd_args):
         pass
 
-    def _parse_result(self, **kwargs):
+    def _parse_result(self, result):
         pass

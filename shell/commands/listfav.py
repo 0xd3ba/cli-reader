@@ -14,11 +14,11 @@ class ListFavCommand(shell.cmdbase.CommandBase):
     def help(self):
         pass
 
-    def execute(self, **kwargs):
+    def execute(self, cmd_args):
         pass
 
     def _parse_args(self, cmd_args):
         pass
 
-    def _parse_result(self, **kwargs):
+    def _parse_result(self, result):
         pass

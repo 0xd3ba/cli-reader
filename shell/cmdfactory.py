@@ -9,6 +9,7 @@ import shell.commands.read     as read
 import shell.commands.rmfav    as rmfav
 import shell.commands.setweb   as setweb
 import shell.commands.search   as search
+import shell.commands.quit     as quit
 
 class CommandFactory:
     """
@@ -25,7 +26,8 @@ class CommandFactory:
         'read':     read.ReadCommand,           # Read the specified novel
         'rmfav':    rmfav.RemFavCommand,        # Remove from favorites
         'setweb':   setweb.SetWebCommand,       # Set the default website to use
-        'search':   search.SearchCommand        # Search novel in a website (if specified), else use default website
+        'search':   search.SearchCommand,       # Search novel in a website (if specified), else use default website
+        'quit':     quit.QuitCommand            # Exit the shell
     }
 
     def get_command(self, cmd):
