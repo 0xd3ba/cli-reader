@@ -5,7 +5,7 @@ import shell.cmdbase
 
 class DefaultCommand(shell.cmdbase.CommandBase):
     """
-    TODO: Add information about the command
+    DefaultCommand is executed when user inputs some illegal command
     """
 
     def __init__(self):
@@ -16,10 +16,12 @@ class DefaultCommand(shell.cmdbase.CommandBase):
         pass
 
     def execute(self, cmd_args):
-        pass
+        result = "Invalid Commands or Arguments. Please enter valid Command. Use Help!"
+        return -1, self._parse_result(result) #-1 status code as entered command was illegal
 
     def _parse_args(self, cmd_args):
         pass
 
     def _parse_result(self, result):
-        pass
+        # TODO: Parse the result accordingly
+        return result
