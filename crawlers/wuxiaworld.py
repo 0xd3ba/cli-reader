@@ -178,11 +178,32 @@ class WuxiaWorldCrawler(CrawlerBase):
 
     def _get_next_prev_slugs(self, html_file):
         """
-        Extract the URLs to next and previous chapters from the current HTML file
+        Extract the slugs to next and previous chapters from the current HTML file
+        Previous Slug:  <link rel="prev" href="the-slug-of-previous-chapter">
+        Next Slug:      <link rel="next" href="the-slug-of-next-chapter">
         """
-        next_url = None
-        prev_url = None
+        next_slug = None
+        prev_slug = None
 
-        # TODO: Parse the given HTML to extract links for next and previous chapter
+        target_tag   = 'link'
+        target_loc   = 'href'
+        next_var_val = 'next'
+        prev_var_val = 'prev'
+        attr_var     = 'rel'
+        target_attrs = {attr_var: None}
 
-        return next_url, prev_url
+        bs_obj = BeautifulSoup(html_file, self.DEFAULT_HTML_PARSER)
+
+        # Step-1: Find the slug of previous chapter, if any
+        target_attrs[attr_var] = prev_var_val
+        prev_slug_tag = bs_obj.find_all(target_tag, attrs=target_attrs)
+        if prev_slug_tag:
+            prev_slug = prev_slug_tag[0][target_loc]
+
+        # Step-2: Find the slug of the next chapter, if any
+        target_attrs[attr_var] = next_var_val
+        next_slug_tag = bs_obj.find_all(target_tag, attrs=target_attrs)
+        if next_slug_tag:
+            next_slug = next_slug_tag[0][target_loc]
+
+        return next_slug, prev_slug

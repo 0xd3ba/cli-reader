@@ -23,6 +23,7 @@ def fetch(url):
     Fetch the file from the `url` and return the contents
     Write the status of the request to the log as well
     """
+    response = None
     try:
         response = requests.get(url, headers=HTTP_REQ_HEADERS, timeout=CONN_TIMEOUT)
         response.raise_for_status()          # Check if valid HTTP response - HTTPError is raised otherwise
@@ -34,7 +35,7 @@ def fetch(url):
 
     # If the response's status code is not 200 (OK)
     except requests.HTTPError:
-        raise FetchHttpError(url)
+        raise FetchHttpError(url, response)
 
     # If there was a timeout during the request
     except requests.Timeout:
