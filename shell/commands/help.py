@@ -34,7 +34,7 @@ class HelpCommand(shell.cmdbase.CommandBase):
         else:
         	for cmd in args:
         		result[cmd] = cmdFactoryObj.get_command(cmd).DESCRIPTION
-        return 1,self_parse_result(result)	#there's no case for status_code 0
+        return 1,self._parse_result(result)	#there's no case for status_code 0
 
     def _parse_args(self, cmd_args):
         return cmd_args.split(' ')   # No need of argparse for this command
