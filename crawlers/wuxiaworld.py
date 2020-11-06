@@ -1,14 +1,19 @@
 # wuxiaworld.py -- The crawler for WuxiaWorld website
 
-from bs4                        import BeautifulSoup
-from crawlers.cbase             import CrawlerBase
-from crawlers.cutils.fetcher    import fetch
-from crawlers.cutils.chap_utils import create_get_chapter_retval
+from bs4 import BeautifulSoup
+
+from crawlers.cbase              import CrawlerBase
+from crawlers.cutils.fetcher     import fetch
+from crawlers.cutils.chap_utils  import create_get_chapter_retval
+from crawlers.cexceptions.exbase import CrawlerExceptionBase
 
 
 class WuxiaWorldCrawler(CrawlerBase):
     BASE_URL   = "https://www.wuxiaworld.com/novel"  # The base URL for the website
     SEARCH_URL = "https://www.wuxiaworld.com/api/novels/search?query="  # The URL for searches
+
+    # To use when no search results were found with the keyword
+    SEARCH_EMPTY_MSG = "No search results found with the following keyword: "
 
     # The following are the keys of the parsed JSON object
     JSON_ITEM_KEY     = 'items'  # Where the search results are stored
@@ -32,34 +37,34 @@ class WuxiaWorldCrawler(CrawlerBase):
         novel_info = []
         chapter_html_resp = None
 
-        try:
-            novel_info = self.search()
-        except Exception as e:  # For now simply catch a generic exception (fetching error, no search results)
-            #TODO: Update the exception handling
-            pass
+        status, novel_info = self.search()
+        if status == self.CRAWLER_STATUS_ERR:
+            # This means error occurred during search and novel_info contains the error message
+            # No further processing can be done - Just return what it got
+            return status, novel_info
 
         if len(novel_info) > 1:
             # If more than one novel turned up with the given search result
-            # Throw an exception indicating that more than one novel was found
-            # Print the search results as well -- user will give a request again depending on this
-            # TODO: Do the above commented stuff
-            pass
+            # It means the keyword entered by user was not a good filter, indicate that the
+            # get_chapter found more than one result in the status code and return the
+            # results that were obtained from the search
+            return self.CRAWLER_GET_MULT_RES, novel_info
 
         # It means the novel has been found, prepare the URL for the chapter
         # Then fetch the HTML file of the chapter
         novel_curr_chp_url = self._prepare_novel_chapter_url(novel_info[0], chp_num)
         try:
             chapter_html_resp = fetch(novel_curr_chp_url)
-        except Exception as e:
-            # TODO: Handle fetching exceptions if any
-            pass
+        except CrawlerExceptionBase as crex:
+            err_msg = crex.handler()
+            return self.CRAWLER_STATUS_ERR, err_msg
 
         # Chapter contents -- A list of chapter paragraphs
         chapter_conts = self._get_paragraphs(chapter_html_resp.text)
 
         # Extract the URLs to next and previous chapters, if any
         # If any of them doesn't exist, their values are None
-        next_url, prev_url = self._get_next_prev_urls(chapter_html_resp.text)
+        next_slug, prev_slug = self._get_next_prev_slugs(chapter_html_resp.text)
 
         # Name of the novel was already updated in the JSON parsing method
         # Prepare the dictionary to return
@@ -67,10 +72,10 @@ class WuxiaWorldCrawler(CrawlerBase):
                                                   chp_num,
                                                   chapter_conts,
                                                   title=None,
-                                                  next_url=next_url,
-                                                  prev_url=prev_url)
+                                                  next_slug=next_slug,
+                                                  prev_slug=prev_slug)
 
-        return parsed_retval
+        return self.CRAWLER_STATUS_OK, parsed_retval
 
     def next_chapter(self):
         # TODO: Fetch the next chapter, if any
@@ -82,17 +87,20 @@ class WuxiaWorldCrawler(CrawlerBase):
 
     def search(self):
         # Step-1: Get the homepage of the novel
-        search_resp = fetch(self._prepare_search_url())
-        if search_resp is None:
-            # TODO: Fetching error, already logged the error
-            # Raise an exception
-            pass
-        else:
-            results = self._parse_json_resp(search_resp)  # Parse the JSON file contents
-            if not results:
-                # TODO: No search results -- Raise novel not found exception
-                pass
-            return results
+        try:
+            search_resp = fetch(self._prepare_search_url())
+        except CrawlerExceptionBase as crex:
+            err_msg = crex.handler()
+            return self.CRAWLER_STATUS_ERR, err_msg
+
+        results = self._parse_json_resp(search_resp)  # Parse the JSON file contents
+
+        # No search result with the following keyword
+        if not results:
+            err_msg = self.SEARCH_EMPTY_MSG + self.novel
+            return self.CRAWLER_STATUS_ERR, err_msg
+
+        return self.CRAWLER_STATUS_OK, results
 
     def get_summary(self, novel_name):
         pass
@@ -168,7 +176,7 @@ class WuxiaWorldCrawler(CrawlerBase):
 
         return paras
 
-    def _get_next_prev_urls(self, html_file):
+    def _get_next_prev_slugs(self, html_file):
         """
         Extract the URLs to next and previous chapters from the current HTML file
         """

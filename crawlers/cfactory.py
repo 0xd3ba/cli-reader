@@ -19,4 +19,4 @@ class CrawlerFactory:
         Return a crawler instance of the default website. We are guaranteed that it's a
         valid website that is supported.
         """
-        return self.SUPPORTED_WEBS[self.DEFAULT_WEB](novel)
+        return self.SUPPORTED_WEBS[CrawlerFactory.DEFAULT_WEB](novel)
