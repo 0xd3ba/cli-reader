@@ -2,10 +2,12 @@
 
 import shell.cmdbase
 
+
 class ListFavCommand(shell.cmdbase.CommandBase):
     """
     TODO: Add information about the command
     """
+    DESCRIPTION = 'List Contnets of Favourite List'
 
     def __init__(self):
         super().__init__()

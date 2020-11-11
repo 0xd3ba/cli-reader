@@ -2,10 +2,12 @@
 
 import shell.cmdbase
 
+
 class ReadCommand(shell.cmdbase.CommandBase):
     """
     TODO: Add information about the command
     """
+    DESCRIPTION = 'Read a Chapter'
 
     def __init__(self):
         super().__init__()

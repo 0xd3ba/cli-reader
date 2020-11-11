@@ -2,6 +2,8 @@
 
 import shell.cmdbase
 import crawlers.cfactory as cfactory
+from prompt_toolkit import print_formatted_text
+
 
 class ListWebsCommand(shell.cmdbase.CommandBase):
     """
@@ -19,11 +21,12 @@ class ListWebsCommand(shell.cmdbase.CommandBase):
 
     def execute(self, cmd_args):
         crawler = cfactory.CrawlerFactory()
-        results = crawler.SUPPORTED_WEBS.keys()
-        return self._parse_result(results)
+        results = list(crawler.SUPPORTED_WEBS.keys())
+        return 0, self._parse_result(results)
 
     def _parse_args(self, cmd_args):
         pass
 
     def _parse_result(self, result):
+        print_formatted_text(result)
         return result

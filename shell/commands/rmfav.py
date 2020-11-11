@@ -2,10 +2,12 @@
 
 import shell.cmdbase
 
+
 class RemFavCommand(shell.cmdbase.CommandBase):
     """
     TODO: Add information about the command
     """
+    DESCRIPTION = 'Removes from Favourite'
 
     def __init__(self):
         super().__init__()

@@ -2,11 +2,13 @@
 
 import shell.cmdbase
 
+
 class QuitCommand(shell.cmdbase.CommandBase):
     """
     quit -- Exit the shell gracefully
     Usage: quit
     """
+    DESCRIPTION = 'Quits the Application'
 
     def __init__(self):
         super().__init__()
@@ -15,7 +17,7 @@ class QuitCommand(shell.cmdbase.CommandBase):
         return self.__doc__
 
     def execute(self, cmd_args):
-        #TODO: Close any open files, flush to disk..etc
+        # TODO: Close any open files, flush to disk..etc
         exit(0)
 
     def _parse_args(self, cmd_args):

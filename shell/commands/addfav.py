@@ -2,11 +2,13 @@
 
 import shell.cmdbase
 
+
 class AddFavoritesCommand(shell.cmdbase.CommandBase):
     """
     addfav -- Add a novel to favorites
     TODO: Add information about the command
     """
+    DESCRIPTION = 'Adds a chapter of a novel to a favourite list'
 
     def __init__(self):
         super().__init__()
