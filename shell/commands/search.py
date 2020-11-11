@@ -74,29 +74,6 @@ class SearchCommand(shell.cmdbase.CommandBase):
         args = self.arg_parser.parse_args(cmd_args)
         return args
 
-    # def _parse_result(self, results):
-    #     # The style sheet.
-    #     style = Style.from_dict({
-    #         'heading': '#ff0066',
-    #         'name': '#ff0066',
-    #         'tags': '#44ff00 italic',
-    #         'synopsis': '#ffffff',
-    #     })
-    #     i = 1
-    #     for item in results:
-    #         # each item is a dict
-    #         result_model = SearchResultModel(item)
-    #         singleresult = FormattedText([
-    #             ('class:heading', 'Result No : ' + str(i) + '\n'+'-'*50 + '\n'),
-    #             ('class:name', result_model.name + '\n'+'-'*50 + '\n'),
-    #             ('class:tags', result_model.tags + '\n'+'-'*50+'\n'),
-    #             ('class:synopsis', result_model.synopsis),
-    #             ('', '\n\n'),
-    #         ], auto_convert=True)
-    #         print_formatted_text(singleresult, style=style)
-    #         i = i + 1
-
-    #     return results
     def _parse_result(self, results):
         result_model = SearchResultModel()
         i = 0
