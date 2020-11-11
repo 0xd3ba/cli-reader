@@ -1,5 +1,4 @@
 # search.py -- Searches for a novel in a particular website
-from __future__ import unicode_literals, print_function
 import shell.cmdbase
 import crawlers.cfactory as cfactory
 import shlex
@@ -62,6 +61,8 @@ class SearchCommand(shell.cmdbase.CommandBase):
 
     def execute(self, cmd_args):
         args = self._parse_args(cmd_args)
+        if args == None:
+            return -1, "error"
         crawler = cfactory.CrawlerFactory()
         novel = ' '.join(args.novelname)
         web_crawler = crawler.get_crawler(novel)
@@ -71,7 +72,10 @@ class SearchCommand(shell.cmdbase.CommandBase):
         return 0, self._parse_result(results[1])
 
     def _parse_args(self, cmd_args):
-        args = self.arg_parser.parse_args(cmd_args)
+        try:
+            args = self.arg_parser.parse_args(cmd_args)
+        except:
+            return None
         return args
 
     def _parse_result(self, results):

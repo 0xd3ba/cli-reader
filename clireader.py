@@ -13,8 +13,11 @@ if __name__ == '__main__':
     while True:
         # print("CliReader:>",sep="\t")
         cmd = input("CliReader:> ")
-        cmd_obj = cmdFactoryObj.get_command(cmd.split()[0])
-        status_code, result = cmd_obj.execute((cmd.split()[1:]))
+        args = cmd.split()
+        len_args = len(args)
+        cmd_obj = cmdFactoryObj.get_command(args[0])
+        rest = args[1:] if len_args != 1 else []
+        status_code, result = cmd_obj.execute(rest)
         # print(status_code)
 
         # TODO: Result will be shown on some kind of UI so will call a method being made by arnab meanshile printing result on Standard Output
