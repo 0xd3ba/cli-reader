@@ -28,11 +28,12 @@ class SetWebCommand(shell.cmdbase.CommandBase):
         all_websites = crawler.SUPPORTED_WEBS.keys()
         if args.website in all_websites:
             crawler.DEFAULT_WEB = args.website
-        else:
-            #Throw Error
+        # else:
+        #     # Throw Error
 
     def _parse_args(self, cmd_args):
-        self.arg_parser.add_argument('-w', '--website', type= str,required=True,help= 'Name of the website')
+        self.arg_parser.add_argument(
+            '-w', '--website', type=str, required=True, help='Name of the website')
         args = self.arg_parser.parse_args(shlex.split(cmd_args))
         return args
 
