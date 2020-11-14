@@ -16,6 +16,8 @@ class WuxiaWorldCrawler(CrawlerBase):
 
     # To use when no search results were found with the keyword
     SEARCH_EMPTY_MSG = "No search results found with the following keyword: "
+    NO_NEXT_CHAP_MSG = "There is no next chapter (yet), the current one is the latest one"
+    NO_PREV_CHAP_MSG = "There is no previous chapter prior to this chapter"
 
     # The following are the keys of the parsed JSON object
     JSON_ITEM_KEY     = 'items'  # Where the search results are stored
@@ -58,38 +60,55 @@ class WuxiaWorldCrawler(CrawlerBase):
 
         # It means the novel has been found, prepare the URL for the chapter
         # Then fetch the HTML file of the chapter
-        novel_curr_chp_url = self._prepare_novel_chapter_url(chp_num)
-        try:
-            chapter_html_resp = fetch(novel_curr_chp_url)
-        except CrawlerExceptionBase as crex:
-            err_msg = crex.handler()
-            return self.CRAWLER_STATUS_ERR, err_msg
+        curr_chap_url = self._prepare_novel_chapter_url(chp_num)
 
-        # Chapter contents -- A list of chapter paragraphs
-        chapter_conts = self._get_paragraphs(chapter_html_resp.text)
-
-        # Extract the URLs to next and previous chapters, if any
-        # If any of them doesn't exist, their values are None
-        next_slug, prev_slug = self._get_next_prev_slugs(chapter_html_resp.text)
-        self._set_next_prev_slugs(next_slug, prev_slug)
-
-        # Name of the novel was already updated in the JSON parsing method
-        # Prepare the dictionary to return
-        parsed_retval = create_get_chapter_retval(self.novel,
-                                                  chp_num,
-                                                  chapter_conts,
-                                                  title=None
-                                                  )
-
-        return self.CRAWLER_STATUS_OK, parsed_retval
+        # Fetch the contents of the chapter (if valid) along with the status code of the
+        # operation
+        status, contents = self._chapter_content_fetcher(self, chp_num, curr_chap_url)
+        return status, contents
 
     def next_chapter(self):
-        # TODO: Fetch the next chapter, if any
-        pass
+        """
+        Fetches the next chapter of the novel and returns a new crawler instance
+        along with the chapter contents
+        """
+        if self.novel_next_chap_slug is None:
+            return self.CRAWLER_STATUS_ERR, self.NO_NEXT_CHAP_MSG, None
+
+        # The next chapter slug is not None, create a new instance of this crawler
+        # And fill it with the common details
+        next_chap_obj = self._create_new_instance()
+
+        # Next chapter slug combined with base URL gives the chapter URL
+        # This one is different from what get_chapter(...) needs to do
+        next_chap_url = self._prepare_novel_url(self.novel_next_chap_slug)
+        next_chap_num = self._extract_chap_num(self.novel_next_chap_slug)
+
+        # Alright, fetch the contents
+        status, contents = self._chapter_content_fetcher(next_chap_obj, next_chap_num, next_chap_url)
+        return status, contents, next_chap_obj
+
 
     def previous_chapter(self):
-        # TODO: Fetch the previous chapter, if any
-        pass
+        """
+        Fetches the next chapter of the novel and returns a new crawler instance
+        along with the chapter contents
+        """
+        if self.novel_prev_chap_slug is None:
+            return self.CRAWLER_STATUS_ERR, self.NO_PREV_CHAP_MSG, None
+
+        # The prev chapter slug is not None, create a new instance of this crawler
+        # And fill it with the common details
+        prev_chap_obj = self._create_new_instance()
+
+        # Prev chapter slug combined with base URL gives the chapter URL
+        prev_chap_url = self._prepare_novel_url(self.novel_prev_chap_slug)
+        prev_chap_num = self._extract_chap_num(self.novel_prev_chap_slug)
+
+        # Alright, fetch the contents
+        status, contents = self._chapter_content_fetcher(prev_chap_obj, prev_chap_num, prev_chap_url)
+        return status, contents, prev_chap_obj
+
 
     def search(self):
         # Step-1: Get the homepage of the novel
@@ -108,10 +127,18 @@ class WuxiaWorldCrawler(CrawlerBase):
 
         return self.CRAWLER_STATUS_OK, results
 
-    def get_summary(self, novel_name):
-        pass
-
     # ---------- Private helper methods ---------- #
+
+    def _create_new_instance(self):
+        """
+        Creates a new instance of this class, duplicates the instance variables
+        that are shared across the same novel
+        """
+        new_obj = WuxiaWorldCrawler(self.novel)
+        new_obj.novel_info = self.novel_info
+        new_obj.novel_slug = self.novel_slug
+        new_obj.novel_abbr = self.novel_abbr
+        return new_obj
 
     def _prepare_novel_url(self, slug):
         return f'{self.BASE_URL}/{slug}'
@@ -135,6 +162,19 @@ class WuxiaWorldCrawler(CrawlerBase):
         query = self.novel.split(' ')  # Split at space characters
         query = '%20'.join(query)  # Replace with "%20"
         return self.SEARCH_URL + query  # Append with search query URL and return
+
+    def _extract_chap_num(self, chap_slug):
+        """
+        Extracts the chapter number from the slug. There are some cases when the novel's
+        chapter number is a fricking decimal number, so incrementing/decrementing chapter
+        number by one won't cut it
+
+        /novel/<novel_name>/<novel_abbr>-chapter-<number>-<decimal_1>-<decimal_2>- ...
+        """
+        chap_num = chap_slug.split('/')[-1]      # The last part: <novel_abbr>-chapter-<number>-<decimal_1>- ...
+        chap_num = chap_num.split('-')[2:]       # The chapter number part: <number>-<decimal_1>-
+        chap_num = '-'.join(chap_num)
+        return chap_num
 
     def _set_next_prev_slugs(self, next_slug, prev_slug):
         """
@@ -223,11 +263,49 @@ class WuxiaWorldCrawler(CrawlerBase):
         prev_slug_tag = bs_obj.find_all(target_tag, attrs=target_attrs)
         if prev_slug_tag:
             prev_slug = prev_slug_tag[0][target_loc]
+            # Now remove the /novel/ part from the slug because the base URL already has it
+            prev_slug = prev_slug.split('/')[2:]
+            prev_slug = '/'.join(prev_slug)
 
         # Step-2: Find the slug of the next chapter, if any
         target_attrs[attr_var] = next_var_val
         next_slug_tag = bs_obj.find_all(target_tag, attrs=target_attrs)
         if next_slug_tag:
             next_slug = next_slug_tag[0][target_loc]
+            # Now remove the /novel/ part from the slug because the base URL already has it
+            next_slug = next_slug.split('/')[2:]
+            next_slug = '/'.join(next_slug)
 
         return next_slug, prev_slug
+
+    def _chapter_content_fetcher(self, new_self, chp_num, chap_url):
+        """
+        Fetches the chapter contents, sets the next/prev slugs (if any)
+        and returns with status code and the contents/error message
+
+        new_self is another instance of this class - Using this to unify
+        next_chapter/prev_chapter along with get_chapter(...) methods
+        """
+        try:
+            chapter_html_resp = fetch(chap_url)
+        except CrawlerExceptionBase as crex:
+            err_msg = crex.handler()
+            return new_self.CRAWLER_STATUS_ERR, err_msg
+
+        # Chapter contents -- A list of chapter paragraphs
+        chapter_conts = new_self._get_paragraphs(chapter_html_resp.text)
+
+        # Extract the URLs to next and previous chapters, if any
+        # If any of them doesn't exist, their values are None
+        next_slug, prev_slug = new_self._get_next_prev_slugs(chapter_html_resp.text)
+        new_self._set_next_prev_slugs(next_slug, prev_slug)
+
+        # Name of the novel was already updated in the JSON parsing method
+        # Prepare the dictionary to return
+        parsed_retval = create_get_chapter_retval(self.novel,
+                                                  chp_num,
+                                                  chapter_conts,
+                                                  title=None
+                                                  )
+
+        return new_self.CRAWLER_STATUS_OK, parsed_retval

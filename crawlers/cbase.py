@@ -19,21 +19,18 @@ class CrawlerBase:
         """
         Given a chapter number of some novel, return a dictionary object
         of the chapter contents (see cutils package).
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
-    def next_chapter(self) -> (int, any):
+    def next_chapter(self) -> (int, any, any):
         """
         Returns the next chapter relative to the current chapter.
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
-    def previous_chapter(self) -> (int, any):
+    def previous_chapter(self) -> (int, any, any):
         """
         Returns the previous chapter relative to the current chapter.
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
@@ -41,11 +38,5 @@ class CrawlerBase:
         """
         Searches for the novel (saved as instance variable) in the corresponding
         website and returns a dictionary object of the results
-        """
-        raise NotImplementedError
-
-    def get_summary(self, novel_name) -> (int, any):
-        """
-        Gets the summary of the novel titled `novel_name` as a dictionary object
         """
         raise NotImplementedError
