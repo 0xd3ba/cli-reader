@@ -14,11 +14,6 @@ class WuxiaWorldCrawler(CrawlerBase):
     BASE_URL   = "https://www.wuxiaworld.com/novel"  # The base URL for the website
     SEARCH_URL = "https://www.wuxiaworld.com/api/novels/search?query="  # The URL for searches
 
-    # To use when no search results were found with the keyword
-    SEARCH_EMPTY_MSG = "No search results found with the following keyword: "
-    NO_NEXT_CHAP_MSG = "There is no next chapter (yet), the current one is the latest one"
-    NO_PREV_CHAP_MSG = "There is no previous chapter prior to this chapter"
-
     # The following are the keys of the parsed JSON object
     JSON_ITEM_KEY     = 'items'  # Where the search results are stored
     JSON_NOV_ABBR     = 'abbreviation'  # Short form of the novel (required for forming the URL)

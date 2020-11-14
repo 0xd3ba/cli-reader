@@ -8,6 +8,9 @@
 class CrawlerBase:
 
     DEFAULT_HTML_PARSER = 'lxml'
+    SEARCH_EMPTY_MSG = "No search results found with the following keyword: "
+    NO_NEXT_CHAP_MSG = "There is no next chapter (yet), the current one is the latest one"
+    NO_PREV_CHAP_MSG = "There is no previous chapter prior to this chapter"
 
     # Few status codes that are same in all crawlers
     CRAWLER_STATUS_OK    = 0     # Everything worked fine
