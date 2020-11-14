@@ -5,7 +5,9 @@ from bs4 import BeautifulSoup
 from crawlers.cbase              import CrawlerBase
 from crawlers.cutils.fetcher     import fetch
 from crawlers.cutils.chap_utils  import create_get_chapter_retval
+from crawlers.cutils.chap_utils  import create_search_retval_i
 from crawlers.cexceptions.exbase import CrawlerExceptionBase
+import crawlers.cutils.chap_utils as cutils
 
 
 class WuxiaWorldCrawler(CrawlerBase):
@@ -20,15 +22,19 @@ class WuxiaWorldCrawler(CrawlerBase):
     JSON_NOV_ABBR     = 'abbreviation'  # Short form of the novel (required for forming the URL)
     JSON_NOV_NAME     = 'name'
     JSON_NOV_SLUG     = 'slug'
-    JSON_NOV_SUMM     = 'synopsis'
+    JSON_NOV_SYNP     = 'synopsis'
     JSON_NOV_TAGS     = 'tags'
     JSON_NOV_GENRES   = 'genres'
     JSON_NOV_CHAP_CNT = 'chapterCount'
 
     def __init__(self, novel_name, chap_num=None):
-        self.novel = novel_name
-        self.chapter = chap_num
-        self.novel_info = None
+        self.novel = novel_name             # Name of the novel
+        self.chapter = chap_num             # Chapter number of the novel to get
+        self.novel_info = None              # Search result of the novel
+        self.novel_slug = None              # The slug of the novel
+        self.novel_abbr = None              # Short form of the novel
+        self.novel_next_chap_slug = None    # The slug of next chapter
+        self.novel_prev_chap_slug = None    # The slug of the previous chapter
 
     def get_chapter(self, chp_num):
         """
@@ -52,7 +58,7 @@ class WuxiaWorldCrawler(CrawlerBase):
 
         # It means the novel has been found, prepare the URL for the chapter
         # Then fetch the HTML file of the chapter
-        novel_curr_chp_url = self._prepare_novel_chapter_url(novel_info[0], chp_num)
+        novel_curr_chp_url = self._prepare_novel_chapter_url(chp_num)
         try:
             chapter_html_resp = fetch(novel_curr_chp_url)
         except CrawlerExceptionBase as crex:
@@ -65,15 +71,15 @@ class WuxiaWorldCrawler(CrawlerBase):
         # Extract the URLs to next and previous chapters, if any
         # If any of them doesn't exist, their values are None
         next_slug, prev_slug = self._get_next_prev_slugs(chapter_html_resp.text)
+        self._set_next_prev_slugs(next_slug, prev_slug)
 
         # Name of the novel was already updated in the JSON parsing method
         # Prepare the dictionary to return
         parsed_retval = create_get_chapter_retval(self.novel,
                                                   chp_num,
                                                   chapter_conts,
-                                                  title=None,
-                                                  next_slug=next_slug,
-                                                  prev_slug=prev_slug)
+                                                  title=None
+                                                  )
 
         return self.CRAWLER_STATUS_OK, parsed_retval
 
@@ -110,15 +116,15 @@ class WuxiaWorldCrawler(CrawlerBase):
     def _prepare_novel_url(self, slug):
         return f'{self.BASE_URL}/{slug}'
 
-    def _prepare_novel_chapter_url(self, novel_info, num):
+    def _prepare_novel_chapter_url(self, chap_num):
         """
         Novel chapter URLs in Wuxiaworld are of the form:
         /<slug>/<abbreviation>-chapter-<num>
         """
-        slug = novel_info[self.JSON_NOV_SLUG]
-        abbr = novel_info[self.JSON_NOV_ABBR].lower()
+        slug = self.novel_slug
+        abbr = self.novel_abbr.lower()
         nurl = self._prepare_novel_url(slug)
-        nov_chp_url = nurl + f'/{abbr}-chapter-{str(num)}'
+        nov_chp_url = nurl + f'/{abbr}-chapter-{str(chap_num)}'
 
         return nov_chp_url
 
@@ -130,32 +136,50 @@ class WuxiaWorldCrawler(CrawlerBase):
         query = '%20'.join(query)  # Replace with "%20"
         return self.SEARCH_URL + query  # Append with search query URL and return
 
+    def _set_next_prev_slugs(self, next_slug, prev_slug):
+        """
+        Sets the slugs of next and previous chapter relative to the current chapter
+        """
+        self.novel_next_chap_slug = next_slug
+        self.novel_prev_chap_slug = prev_slug
+
     def _parse_json_resp(self, json_response):
         """
         Wuxiaworld searches returns a JSON file. Parse it to a list of dictionaries
         """
         search_res = []
+        meta_info_res = []        # To store some meta information about the novel (slug & abbreviation)
         json_obj = json_response.json()
+
+        META_INFO_RES_SLUG_IDX = 0
+        META_INFO_RES_ABBR_IDX = 1
 
         # For each result, only keep the necessary information
         for nov_info in json_obj[self.JSON_ITEM_KEY]:
-            novel_i = {}
 
-            novel_i[self.JSON_NOV_NAME]     = nov_info[self.JSON_NOV_NAME]
-            novel_i[self.JSON_NOV_SLUG]     = nov_info[self.JSON_NOV_SLUG]
-            novel_i[self.JSON_NOV_TAGS]     = nov_info[self.JSON_NOV_TAGS]
-            novel_i[self.JSON_NOV_CHAP_CNT] = nov_info[self.JSON_NOV_CHAP_CNT]
-            novel_i[self.JSON_NOV_GENRES]   = nov_info[self.JSON_NOV_GENRES]
-            novel_i[self.JSON_NOV_ABBR]     = nov_info[self.JSON_NOV_ABBR]
-            novel_i[self.JSON_NOV_SUMM]     = self._get_paragraphs(nov_info[self.JSON_NOV_SUMM])
+            novel_i_name     = nov_info[self.JSON_NOV_NAME]
+            novel_i_slug     = nov_info[self.JSON_NOV_SLUG]
+            novel_i_tags     = nov_info[self.JSON_NOV_TAGS]
+            novel_i_chap_cnt = nov_info[self.JSON_NOV_CHAP_CNT]
+            novel_i_genres   = nov_info[self.JSON_NOV_GENRES]
+            novel_i_abbr     = nov_info[self.JSON_NOV_ABBR]
+            novel_i_synp     = self._get_paragraphs(nov_info[self.JSON_NOV_SYNP])
 
-            # Finally save this result to the list of resuts
+            # Finally save this result to the list of results
+            novel_i = create_search_retval_i(novel_name=novel_i_name,
+                                             chap_count=novel_i_chap_cnt,
+                                             synopsis=novel_i_synp,
+                                             tags=novel_i_tags,
+                                             genres=novel_i_genres)
             search_res.append(novel_i)
+            meta_info_res.append([novel_i_slug, novel_i_abbr])
 
         # If we filtered out the novel we wanted, save the information about it
         if len(search_res) == 1:
-            self.novel = search_res[0][self.JSON_NOV_NAME]
+            self.novel = search_res[0][cutils.SEARCH_NOV_NAME_KEY]
             self.novel_info = search_res[0]
+            self.novel_slug = meta_info_res[0][META_INFO_RES_SLUG_IDX]
+            self.novel_abbr = meta_info_res[0][META_INFO_RES_ABBR_IDX]
 
         return search_res
 
