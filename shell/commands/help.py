@@ -43,8 +43,7 @@ class HelpCommand(shell.cmdbase.CommandBase):
     def _parse_result(self, results):
         # TODO: Parse the result accordingly
         for item in results:
-            print_formatted_text(item)
-            print(":")
-            print_formatted_text(results[item])
+            text = str(item) + ' : ' + str(results[item]) + '\n'
+            print_formatted_text(text)
 
         return results
