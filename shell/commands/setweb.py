@@ -27,17 +27,17 @@ class SetWebCommand(shell.cmdbase.CommandBase):
 
     def execute(self, cmd_args):
         args = self._parse_args(cmd_args)
-        if args == None:
+        if args is None:
             return (-1, "error")
         crawler = cfactory.CrawlerFactory()
         all_websites = crawler.SUPPORTED_WEBS.keys()
         if args.website in all_websites:
-            crawler.DEFAULT_WEB = args.website
+            cfactory.CrawlerFactory.DEFAULT_WEB = args.website
             result = "Default Website has been changed to : " + crawler.DEFAULT_WEB
-            return 0, _parse_result(result)
+            return 0, self._parse_result(result)
         else:
             result = "Opps!! Default can't ba changed : Website Not Supported."
-            return -1, _parse_result(result)
+            return -1, self._parse_result(result)
 
     def _parse_args(self, cmd_args):
         try:
