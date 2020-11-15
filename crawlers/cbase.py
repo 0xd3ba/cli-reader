@@ -8,6 +8,9 @@
 class CrawlerBase:
 
     DEFAULT_HTML_PARSER = 'lxml'
+    SEARCH_EMPTY_MSG = "No search results found with the following keyword: "
+    NO_NEXT_CHAP_MSG = "There is no next chapter (yet), the current one is the latest one"
+    NO_PREV_CHAP_MSG = "There is no previous chapter prior to this chapter"
 
     # Few status codes that are same in all crawlers
     CRAWLER_STATUS_OK    = 0     # Everything worked fine
@@ -19,21 +22,18 @@ class CrawlerBase:
         """
         Given a chapter number of some novel, return a dictionary object
         of the chapter contents (see cutils package).
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
-    def next_chapter(self) -> (int, any):
+    def next_chapter(self) -> (int, any, any):
         """
         Returns the next chapter relative to the current chapter.
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
-    def previous_chapter(self) -> (int, any):
+    def previous_chapter(self) -> (int, any, any):
         """
         Returns the previous chapter relative to the current chapter.
-        If no such chapter exists, raises a ChapterNotFoundError exception
         """
         raise NotImplementedError
 
@@ -41,11 +41,5 @@ class CrawlerBase:
         """
         Searches for the novel (saved as instance variable) in the corresponding
         website and returns a dictionary object of the results
-        """
-        raise NotImplementedError
-
-    def get_summary(self, novel_name) -> (int, any):
-        """
-        Gets the summary of the novel titled `novel_name` as a dictionary object
         """
         raise NotImplementedError
