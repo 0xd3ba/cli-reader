@@ -5,13 +5,15 @@
 
 
 import crawlers.wuxiaworld
+import crawlers.lightnovelworld
 
 class CrawlerFactory:
 
     # The value of DEFAULT_WEB can only be changed by setweb command
     DEFAULT_WEB = 'wuxiaworld'
     SUPPORTED_WEBS = {
-        'wuxiaworld': crawlers.wuxiaworld.WuxiaWorldCrawler
+        'wuxiaworld': ['Wuxiaworld.com', crawlers.wuxiaworld.WuxiaWorldCrawler],
+        'lnworld':    ['LightNovelWorld.com', crawlers.lightnovelworld.LightNovelWorldCrawler]
     }
 
     def get_crawler(self, novel):
@@ -19,4 +21,5 @@ class CrawlerFactory:
         Return a crawler instance of the default website. We are guaranteed that it's a
         valid website that is supported.
         """
-        return self.SUPPORTED_WEBS[CrawlerFactory.DEFAULT_WEB](novel)
+        crawler = self.SUPPORTED_WEBS[CrawlerFactory.DEFAULT_WEB][1]
+        return crawler(novel)

@@ -15,6 +15,10 @@ class CommandBase:
     CommandBase -- Base class for all the supported shell commands
     """
 
+    CMD_STATUS_SUCCESS      = 0       # Command execution was successful, print the result
+    CMD_STATUS_READ_SUCCESS = 1       # Command execution was successful, DONT print the result
+    CMD_STATUS_ERROR        = -1      # Command execution was a failure, print the error message
+
     def __init__(self):
         # The argument parser for the command
         self.arg_parser = ArgumentParser()
@@ -45,8 +49,8 @@ class CommandBase:
         """
         raise NotImplementedError
 
-    def _parse_result(self, result):
+    def _print_result(self, result):
         """
-        Responsible for parsing the result of the command and returning it
+        Responsible for parsing the result of the command and printing it
         """
         raise NotImplementedError
