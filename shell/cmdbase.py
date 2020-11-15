@@ -1,6 +1,14 @@
 # cmdbase.py -- The base class for all the shell commands
 
 import argparse
+import sys
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        raise Exception()
+
 
 class CommandBase:
     """
@@ -8,7 +16,8 @@ class CommandBase:
     """
 
     def __init__(self):
-        self.arg_parser = argparse.ArgumentParser()  # The argument parser for the command
+        # The argument parser for the command
+        self.arg_parser = ArgumentParser()
         self.description = None
 
     def help(self):
@@ -22,13 +31,13 @@ class CommandBase:
         """
         raise NotImplementedError
 
-    def execute(self, cmd_args:str):
+    def execute(self, cmd_args: str):
         """
         Executes the command with the given keyword arguments
         """
         raise NotImplementedError
 
-    def _parse_args(self, cmd_args:str):
+    def _parse_args(self, cmd_args: str):
         """
         Responsible for parsing the command line arguments of the command
         and returning a dictionary object
