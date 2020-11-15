@@ -18,7 +18,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.document import Document
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
-from prompt_toolkit.layout.containers import Window, HSplit
+from prompt_toolkit.layout.containers import Window, HSplit, WindowAlign
 from prompt_toolkit.widgets import Box, MenuContainer, FormattedTextToolbar
 from prompt_toolkit.layout.layout import Layout
 
@@ -78,12 +78,12 @@ class ReadCommand(shell.cmdbase.CommandBase):
         #     self.menu
         # ], padding_char='-', padding=1, padding_style='#ffff00')
         self.content = HSplit([
-            Box(self.top_menu, padding_bottom=1,
-                padding_left=50,),
-            Box(Window(content=self.buf_control, wrap_lines=True),
-                padding_left=1, padding_right=1),
-            Box(self.menu, padding_bottom=1)
-        ], padding_char='-', padding=1, padding_style='#ffff00')
+            Box(self.top_menu, padding_bottom=2,
+                style='#eceff1 bg:#6002ee'),
+            Box(Window(content=self.buf_control, wrap_lines=True, style='#eceff1 bg:#263238'),
+                padding_left=1, padding_right=1, style='#eceff1 bg:#263238'),
+            Box(self.menu, padding_top=1, style='#eceff1 bg:#2001ee')
+        ])
         self.container = self.content
         self.layout = Layout(self.container)
 
@@ -97,7 +97,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
             # update current chapter number
             self.curr_chap_num = result[cu.GET_CHAP_TITLE_KEY]
             # update curreent chapter content
-            self.chapter_content = '\n'.join(
+            self.chapter_content = '\n\n'.join(
                 self.chapter[cu.GET_CHAP_CONTENTS_KEY])
             # update the web crawler
             self.web_crawler = newcrawler
@@ -117,7 +117,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
             # update current chapter number
             self.curr_chap_num = result[cu.GET_CHAP_TITLE_KEY]
             # update curreent chapter content
-            self.chapter_content = '\n'.join(
+            self.chapter_content = '\n\n'.join(
                 self.chapter[cu.GET_CHAP_CONTENTS_KEY])
             # update the web crawler
             self.web_crawler = newcrawler
@@ -134,7 +134,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
         @self.key_binding.add('c-r')
         def reload_(event):
             # reload the chapter content to last valid content
-            self.chapter_content = '\n'.join(
+            self.chapter_content = '\n\n'.join(
                 self.chapter[cu.GET_CHAP_CONTENTS_KEY])
             self.changebuffercontent()
 
@@ -167,7 +167,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
         self.novel = result[cu.GET_CHAP_NOV_NAME_KEY]
         self.chapter = result
         self.curr_chap_num = result[cu.GET_CHAP_TITLE_KEY]
-        self.chapter_content = '\n'.join(
+        self.chapter_content = '\n\n'.join(
             self.chapter[cu.GET_CHAP_CONTENTS_KEY])
         return 0, result
 
