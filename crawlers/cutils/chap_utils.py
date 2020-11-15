@@ -6,11 +6,12 @@ GET_CHAP_CONTENTS_KEY = 'contents'
 GET_CHAP_TITLE_KEY = 'chap_title'
 GET_CHAP_DEFAULT_TITLE = 'Chapter-'
 
-SEARCH_NOV_NAME_KEY = GET_CHAP_NOV_NAME_KEY
-SEARCH_NOV_SYNP_KEY = 'synopsis'
-SEARCH_NOV_TAGS_KEY = 'tags'
-SEARCH_NOV_GENRES_KEY = 'genres'
-SEARCH_NOV_CHAP_CNT_KEY = 'chapter_count'
+# Writing them prettily because they will be printed to the screen
+SEARCH_NOV_NAME_KEY = 'Title'
+SEARCH_NOV_SYNP_KEY = 'Synopsis'
+SEARCH_NOV_TAGS_KEY = 'Tags'
+SEARCH_NOV_GENRES_KEY = 'Genres'
+SEARCH_NOV_CHAP_CNT_KEY = 'Chapter Count'
 
 
 def create_get_chapter_retval(novel_name, chap_num, paragraphs, title=None):
