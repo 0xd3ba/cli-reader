@@ -176,7 +176,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
 
     def updateTopMenu(self):
         self.novel_menu.content.text = '\n' + str(self.novel)
-        self.top_menu.content.text = str(self.curr_chap_num)
+        self.top_menu.content.text = '\n' + str(self.curr_chap_num)
 
     def changebuffercontent(self):
         self.buffer.set_document(
