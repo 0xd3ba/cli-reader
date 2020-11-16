@@ -5,20 +5,36 @@ import prompt_toolkit as ptk
 
 
 HEADER_COLOR = '#29b6f6'
-NORMAL_COLOR = '#fafafa'
-HIGHLIGHT_COLOR = '#fdd835'
-ERROR_COLOR = '#f4511e'
+NORMAL_COLOR = '#b0bec5'
+HIGHLIGHT_COLOR = '#29b6f6'
+ERROR_COLOR = '#e30425'
 
 HEADER_TEXT_STYLE = 'italic'
 ERROR_TEXT_STYLE = ''
 NORMAL_TEXT_STYLE = ''
 HIGHLIGHT_TEXT_STYLE = ''
 
-BACKGROUND_STYLE = ['bg:#263238']
-CONTENT_STYLE = ['#eceff1 bg:#263238']
-TOP_MENU_STYLE = ['bold #eceff1 bg:#209fff']
-TOP_SUB_MENU_STYLE = ['bold #eceff1 bg:#6002ee']
-BOTTOM_MENU_STYLE = ['#eceff1 bg:#209fff', '#6ceff1 bg:#111fff']
+
+# Theme related stuff
+BACKGROUND_STYLE = ['bg:#10505c',
+                    'bg:#5d1049',
+                    'bg:#263238']
+
+CONTENT_STYLE = ['#68e182 bg:#10505c',
+                 '#be9fb6 bg:#5d1049',
+                 '#b0bec5 bg:#263238']
+
+TOP_MENU_STYLE = ['bold #eceff1 bg:#10505c',
+                  'bold #ffebee bg:#5d1049',
+                  'bold #f5f5f5 bg:#263238']
+
+TOP_SUB_MENU_STYLE = ['bold #ffaf49 bg:#10505c',
+                      'bold #e30425 bg:#5d1049',
+                      'bold #00b0ff bg:#263238']
+
+BOTTOM_MENU_STYLE = ['#03abf7 bg:#10505c',
+                     '#ffaf49 bg:#5d1049',
+                     '#EF5350 bg:#263238']
 
 # Border to separate header from data
 DATA_SEP_CHAR = '-'
@@ -34,6 +50,14 @@ FMT_STYLES = {
     'error':     f'{ERROR_COLOR} {ERROR_TEXT_STYLE}'
 }
 
+
+# Indices of the themes supported
+SUPP_THEMES = {
+    'retro-green':   0,
+    'ubuntu-purple': 1,
+    'minimal-gray':  2
+}
+
 READER_FMT_STYLES = [
     {
         'background':   f'{BACKGROUND_STYLE[0]}',
@@ -42,12 +66,21 @@ READER_FMT_STYLES = [
         'content':      f'{CONTENT_STYLE[0]}',
         'bottommenu':   f'{BOTTOM_MENU_STYLE[0]}',
     },
+
     {
-        'background':   f'{BACKGROUND_STYLE[0]}',
-        'topmenu':      f'{TOP_MENU_STYLE[0]}',
-        'topsubmenu':   f'{TOP_SUB_MENU_STYLE[0]}',
-        'content':      f'{CONTENT_STYLE[0]}',
+        'background':   f'{BACKGROUND_STYLE[1]}',
+        'topmenu':      f'{TOP_MENU_STYLE[1]}',
+        'topsubmenu':   f'{TOP_SUB_MENU_STYLE[1]}',
+        'content':      f'{CONTENT_STYLE[1]}',
         'bottommenu':   f'{BOTTOM_MENU_STYLE[1]}',
+    },
+
+    {
+        'background':   f'{BACKGROUND_STYLE[2]}',
+        'topmenu':      f'{TOP_MENU_STYLE[2]}',
+        'topsubmenu':   f'{TOP_SUB_MENU_STYLE[2]}',
+        'content':      f'{CONTENT_STYLE[2]}',
+        'bottommenu':   f'{BOTTOM_MENU_STYLE[2]}',
     }
 ]
 
@@ -56,8 +89,8 @@ FMT_STYLES_NRM_KEY = 'normal'
 FMT_STYLES_HL_KEY = 'highlight'
 FMT_STYLES_ERR_KEY = 'error'
 
-READER_FMT_STYLES_INDEX = 1
-READER_FMT_STYLES_SIZE = 2
+READER_FMT_STYLES_INDEX = SUPP_THEMES['minimal-gray']
+READER_FMT_STYLES_SIZE = 3
 
 READER_FMT_STYLES_HDR_KEY = 'header'
 READER_FMT_STYLES_NRM_KEY = 'normal'
@@ -169,8 +202,7 @@ def res_format_search(search_results, keyword):
 
             # Convert value to a string if it is a list
             val = '  '.join(val) if isinstance(val, list) else val
-            fmt_list[fmt_lidx +
-                     1] = (FMT_STYLES[FMT_STYLES_NRM_KEY], str(val) + '\n')
+            fmt_list[fmt_lidx +1] = (FMT_STYLES[FMT_STYLES_NRM_KEY], str(val) + '\n')
 
             fmt_lidx += 2
 
@@ -195,8 +227,8 @@ def res_format_error(msg):
     return fmt_obj
 
 
-def res_format_setweb(msg):
-    """ Result formatter for setweb command """
+def res_format_generic(msg):
+    """ Result formatter for generic single-line messages """
 
     fmt_msg = [(FMT_STYLES[FMT_STYLES_HDR_KEY], msg)]
     fmt_obj = ptk.formatted_text.FormattedText(fmt_msg)
@@ -211,6 +243,7 @@ def res_format_help_mult(result_dict):
     cmd_keys_lj = [k.ljust(ljust_len) for k in result_dict.keys()]
 
     fmt_list = []
+    fmt_list.append(('', '\n'))     # A blank space
 
     # Loop through each (left-justified)key and value pairs, format them
     # appropriately and add them to the fmt_list
@@ -239,3 +272,7 @@ def res_format_help_single(result_dict):
 
     fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
     return fmt_obj
+
+def res_format_settheme(msg):
+    """ Result formatter for the settheme command -- Lists the themes supported """
+    pass

@@ -87,7 +87,7 @@ class ReadCommand(cmdbase.CommandBase):
                        cursorline=True, align=WindowAlign.LEFT, always_hide_cursor=True, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_CONTENT_KEY]),
                 padding_left=1, padding_right=1),
             self.menu
-        ], style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BACKGROUND_KEY], padding=1, padding_style='bg:#263238')
+        ], style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BACKGROUND_KEY], padding=1, padding_style=rf.BACKGROUND_STYLE[rf.READER_FMT_STYLES_INDEX])
         self.container = self.content
         self.layout = Layout(self.container)
 
@@ -168,7 +168,7 @@ class ReadCommand(cmdbase.CommandBase):
         status, result = self.web_crawler.get_chapter(self.curr_chap_num)
         if status != 0:
             return status, result
-        self.novel = result[cu.GET_CHAP_NOV_NAME_KEY]
+        self.novel = '-- ' + result[cu.GET_CHAP_NOV_NAME_KEY] + ' --'
         self.chapter = result
         self.curr_chap_num = result[cu.GET_CHAP_TITLE_KEY]
         self.chapter_content = '\n\n'.join(

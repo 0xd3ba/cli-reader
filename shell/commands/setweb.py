@@ -52,4 +52,4 @@ class SetWebCommand(shell.cmdbase.CommandBase):
         pass
 
     def _parse_result(self, result):
-        return res_fmt.res_format_setweb(result)
+        return res_fmt.res_format_generic(result)
