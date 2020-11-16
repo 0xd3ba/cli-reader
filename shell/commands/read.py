@@ -30,8 +30,8 @@ class ReadCommand(cmdbase.CommandBase):
     Opens a Reader for a given Chapter of given novel
     """
     DESCRIPTION = 'Reads the given Chapter'
-    RELOAD_MESG = '\nPress Control-r to load the latest valid chapter.\n' + \
-        '(OR), Press Control-t to load the first chapter you started with.\n'
+    RELOAD_MESG = '\n\nPress Control-R to load the latest valid chapter.\n' + \
+        '(OR), Press Control-T to load the first chapter you started with.\n'
     PARSING_ERR_MSG = "Error in Parsing Arguments"
 
     def __init__(self):

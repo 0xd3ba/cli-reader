@@ -273,6 +273,17 @@ def res_format_help_single(result_dict):
     fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
     return fmt_obj
 
+
 def res_format_settheme(msg):
     """ Result formatter for the settheme command -- Lists the themes supported """
-    pass
+
+    fmt_list = []
+    themes_supp = SUPP_THEMES.keys()
+
+    fmt_list.append((FMT_STYLES[FMT_STYLES_HL_KEY], msg + '\n'))
+    for i, theme in enumerate(themes_supp):
+        theme_str = f'\t{i+1}. {theme}\n'
+        fmt_list.append((FMT_STYLES[FMT_STYLES_ERR_KEY], theme_str))
+
+    fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
+    return fmt_obj
