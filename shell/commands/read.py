@@ -3,6 +3,7 @@
 import shell.cmdbase
 import crawlers.cfactory as cfactory
 from crawlers.cutils import chap_utils as cu
+from shell.format_utils import result_formatter as rf
 '''
 follwing are the imports from prompt toolkit:
 
@@ -41,7 +42,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
         self.arg_parser.add_argument(
             '-c', '--chapter', type=str, help='Chapter Number')
         self.starting_chap = 1
-        self.novel = None                # will store the current novel name
+        self.novel = ""                  # will store the current novel name
         self.curr_chap_num = 1           # store current chapter number
         self.prev_chap = None            # store previous chapter object
         self.next_chap = None            # store next chapter object
@@ -62,15 +63,16 @@ class ReadCommand(shell.cmdbase.CommandBase):
         self.buf_control = BufferControl(
             buffer=self.buffer, key_bindings=self.key_binding)
         # initialize bottom menu content
-        self.menu_content = " "*60 + \
-                            "[Menu Controls]\nCtrl-Q : Back, Ctrl-N : Next Chapter, Ctrl-P : Previous Chapter," +\
-                            " Ctrl-r : Load Last Valid Chapter, Ctrl-t : Load with Starting Chapter"
-        self.menu = FormattedTextToolbar(
-            text=self.menu_content)
+        self.menu_content = "[Menu Controls]\nCtrl-Q : Back | Ctrl-N : Next Chapter | Ctrl-P : Previous Chapter |" +\
+                            " Ctrl-R : Load Last Valid Chapter | Ctrl-T : Load with Starting Chapter\n\n"
+        self.menu = Window(content=FormattedTextControl(
+            text=self.menu_content), height=3, align=WindowAlign.CENTER, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BOTTOM_MENU_KEY])
         # initialize top menu object
         self.top_menu = Window(content=FormattedTextControl(
-            text="Chapter : " + str(self.curr_chap_num)), height=1)
+            text="Chapter : " + str(self.curr_chap_num)), height=2, align=WindowAlign.CENTER, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_TOP_SUBMENU_KEY])
 
+        self.novel_menu = Window(content=FormattedTextControl(text=str(
+            self.novel)), height=2, align=WindowAlign.CENTER, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_TOP_MENU_KEY])
         # forms windows layout containing topmenu , buffer control and bottom menu
         # self.content = HSplit([
         #     self.top_menu,
@@ -78,12 +80,13 @@ class ReadCommand(shell.cmdbase.CommandBase):
         #     self.menu
         # ], padding_char='-', padding=1, padding_style='#ffff00')
         self.content = HSplit([
-            Box(self.top_menu, padding_bottom=2,
-                style='#eceff1 bg:#6002ee'),
-            Box(Window(content=self.buf_control, wrap_lines=True, style='#eceff1 bg:#263238'),
-                padding_left=1, padding_right=1, style='#eceff1 bg:#263238'),
-            Box(self.menu, padding_top=1, style='#eceff1 bg:#2001ee')
-        ])
+            HSplit([self.novel_menu,
+                    self.top_menu, ]),
+            Box(Window(content=self.buf_control, wrap_lines=True,
+                       cursorline=True, align=WindowAlign.LEFT, always_hide_cursor=True, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_CONTENT_KEY]),
+                padding_left=1, padding_right=1),
+            self.menu
+        ], style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BACKGROUND_KEY], padding=1, padding_style='bg:#263238')
         self.container = self.content
         self.layout = Layout(self.container)
 
@@ -172,9 +175,8 @@ class ReadCommand(shell.cmdbase.CommandBase):
         return 0, result
 
     def updateTopMenu(self):
-        self.top_menu.content.text = "Novel : " + str(self.novel) + \
-            " Chapter: " + \
-            str(self.curr_chap_num)
+        self.novel_menu.content.text = '\n' + str(self.novel)
+        self.top_menu.content.text = '\n' + str(self.curr_chap_num)
 
     def changebuffercontent(self):
         self.buffer.set_document(

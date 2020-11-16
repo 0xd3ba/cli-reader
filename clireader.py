@@ -14,7 +14,6 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit import PromptSession
 
 PROMPT_USERNAME = 'clireader'
-PROMPT_NOVELNAME = cf.DEFAULT_WEB
 style = Style.from_dict({
     # User input (default text).
     '':          '#263238',
@@ -31,12 +30,12 @@ style = Style.from_dict({
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
-
+PROMPT_NOVEL_INDEX = 2
 prompt_message = [
-    ('class:username', PROMPT_USERNAME),
-    ('class:at',       '@'),
-    ('class:novelname',     PROMPT_NOVELNAME),
-    ('class:colon',    ':'),
+    ['class:username', PROMPT_USERNAME],
+    ['class:at',       '@'],
+    ['class:novelname',     cf.DEFAULT_WEB],
+    ['class:colon',    ':'],
 ]
 command_completer = WordCompleter(
     ['help', 'listwebs', 'search', 'read', 'setweb', 'quit'])
@@ -67,6 +66,8 @@ if __name__ == '__main__':
             cmd_obj = cmdFactoryObj.get_command(args[0])
             rest = args[1:] if len_args != 1 else []
             status_code, result = cmd_obj.execute(rest)
+        prompt_message[PROMPT_NOVEL_INDEX][-1] = cf.DEFAULT_WEB
+        print(cf.DEFAULT_WEB)
         # print(status_code)
 
         # TODO: Result will be shown on some kind of UI so will call a method being made by arnab meanshile printing result on Standard Output
