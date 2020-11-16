@@ -14,6 +14,12 @@ ERROR_TEXT_STYLE = ''
 NORMAL_TEXT_STYLE = ''
 HIGHLIGHT_TEXT_STYLE = ''
 
+BACKGROUND_STYLE = ['bg:#263238']
+CONTENT_STYLE = ['#eceff1 bg:#263238']
+TOP_MENU_STYLE = ['bold #eceff1 bg:#209fff']
+TOP_SUB_MENU_STYLE = ['bold #eceff1 bg:#6002ee']
+BOTTOM_MENU_STYLE = ['#eceff1 bg:#209fff', '#6ceff1 bg:#111fff']
+
 # Border to separate header from data
 DATA_SEP_CHAR = '-'
 
@@ -28,10 +34,46 @@ FMT_STYLES = {
     'error':     f'{ERROR_COLOR} {ERROR_TEXT_STYLE}'
 }
 
+READER_FMT_STYLES = [
+    {
+        'background':   f'{BACKGROUND_STYLE[0]}',
+        'topmenu':      f'{TOP_MENU_STYLE[0]}',
+        'topsubmenu':   f'{TOP_SUB_MENU_STYLE[0]}',
+        'content':      f'{CONTENT_STYLE[0]}',
+        'bottommenu':   f'{BOTTOM_MENU_STYLE[0]}',
+    },
+    {
+        'background':   f'{BACKGROUND_STYLE[0]}',
+        'topmenu':      f'{TOP_MENU_STYLE[0]}',
+        'topsubmenu':   f'{TOP_SUB_MENU_STYLE[0]}',
+        'content':      f'{CONTENT_STYLE[0]}',
+        'bottommenu':   f'{BOTTOM_MENU_STYLE[1]}',
+    }
+]
+
 FMT_STYLES_HDR_KEY = 'header'
 FMT_STYLES_NRM_KEY = 'normal'
 FMT_STYLES_HL_KEY = 'highlight'
 FMT_STYLES_ERR_KEY = 'error'
+
+READER_FMT_STYLES_INDEX = 0
+READER_FMT_STYLES_SIZE = 2
+
+READER_FMT_STYLES_HDR_KEY = 'header'
+READER_FMT_STYLES_NRM_KEY = 'normal'
+READER_FMT_STYLES_HL_KEY = 'highlight'
+READER_FMT_STYLES_ERR_KEY = 'error'
+READER_FMT_STYLES_TOP_MENU_KEY = 'topmenu'
+READER_FMT_STYLES_TOP_SUBMENU_KEY = 'topsubmenu'
+READER_FMT_STYLES_CONTENT_KEY = 'content'
+READER_FMT_STYLES_BOTTOM_MENU_KEY = 'bottommenu'
+READER_FMT_STYLES_BACKGROUND_KEY = 'background'
+
+
+def change_reader_format_index(idx):
+    if idx < READER_FMT_STYLES_SIZE:
+        READER_FMT_STYLES_INDEX = idx
+
 
 # Something fun to include in the error messages everytime they are printed
 ERR_EMOJIS = ['(╬ಠ益ಠ)',
