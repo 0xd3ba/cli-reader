@@ -1,9 +1,9 @@
 # help.py -- Displays information about the command
 
-from prompt_toolkit import print_formatted_text
 import crawlers.cbase
 import shell.cmdbase
 import shell.cmdfactory as cmdfactory
+import shell.format_utils.result_formatter as res_fmt
 
 
 class HelpCommand(shell.cmdbase.CommandBase):
@@ -22,28 +22,43 @@ class HelpCommand(shell.cmdbase.CommandBase):
         return self.__doc__
 
     def execute(self, cmd_args):
-        args = cmd_args
-        cmdFactoryObj = cmdfactory.CommandFactory()
-        result = {}
-        if len(args) == 0:
-            for key in cmdFactoryObj.SUPPORTED_CMDS.keys():
-                result[key] = cmdFactoryObj.get_command(key).DESCRIPTION
+        """ Displays the information about the commands specified in the list """
 
-        elif len(args) == 1:
-            result[args[0]] = cmdFactoryObj.get_command(args[0]).help()
-        else:
-            for cmd in args:
-                result[cmd] = cmdFactoryObj.get_command(cmd).DESCRIPTION
-        # there's no case for status_code 0
-        return 0, self._parse_result(result)
+        cmds_dict = cmdfactory.CommandFactory.SUPPORTED_CMDS
+        result_dict = {}
+
+        # This is the case when information about all the commands need to be returned
+        if not cmd_args:
+
+            for cmd in cmds_dict.keys():
+                cmd_obj = cmds_dict[cmd]
+                result_dict[cmd] = cmd_obj.DESCRIPTION
+
+            return self.CMD_STATUS_SUCCESS, res_fmt.res_format_help_mult(result_dict)
+
+        # This is the case when there are multiple commands in the list
+        elif len(cmd_args) > 1:
+            for cmd in cmd_args:
+                cmd_obj = cmds_dict.get(cmd, cmdfactory.CommandFactory.DEF_CMD)
+                result_dict[cmd] = cmd_obj.DESCRIPTION
+
+            return self.CMD_STATUS_SUCCESS, res_fmt.res_format_help_mult(result_dict)
+
+        # This means information is needed only about a single command
+        # Assume the command is an incorrect command, then update the message accordingly
+        cmd = cmd_args[0]
+        result_dict[cmd] = cmdfactory.CommandFactory.DEF_CMD.INVALID_COMMAND_MSG
+        if cmd in cmds_dict.keys():
+            result_dict[cmd_args[0]] = cmds_dict[cmd]().help()
+
+        # By now the result_dict was populated appropriately, parse it and return it to the caller
+        return self.CMD_STATUS_SUCCESS, self._parse_result(result_dict)
+
 
     def _parse_args(self, cmd_args):
         pass  # No need of argparse for this command
 
-    def _parse_result(self, results):
-        # TODO: Parse the result accordingly
-        for item in results:
-            text = str(item) + ' : ' + str(results[item]) + '\n'
-            print_formatted_text(text)
-
-        return results
+    def _parse_result(self, result):
+        # This method is only called when there is a single result to parse
+        # Bad way to do things but it gets the job done though
+        return res_fmt.res_format_help_single(result)

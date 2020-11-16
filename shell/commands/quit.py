@@ -17,7 +17,7 @@ class QuitCommand(shell.cmdbase.CommandBase):
         return self.__doc__
 
     def execute(self, cmd_args):
-        # TODO: Close any open files, flush to disk..etc
+        """ Simply does an exit(0) (~_~) """
         exit(0)
 
     def _parse_args(self, cmd_args):

@@ -1,6 +1,6 @@
 # result_formatter.py -- Formats the results of the commands that needs to return output
 
-import crawlers.cutils.chap_utils as chap_utils
+import random
 import prompt_toolkit as ptk
 
 
@@ -33,6 +33,16 @@ FMT_STYLES_NRM_KEY = 'normal'
 FMT_STYLES_HL_KEY  = 'highlight'
 FMT_STYLES_ERR_KEY = 'error'
 
+# Something fun to include in the error messages everytime they are printed
+ERR_EMOJIS = ['(╬ಠ益ಠ)',
+              '( ͡ಠ ʖ̯ ͡ಠ)',
+              '(ಠ_ಠ)',
+              '(﹒︠益﹒︡)',
+              '(>皿<)',
+              '(.﹒︣︿﹒︣.)',
+              '┐(͠≖ ͜ʖ͠≖)┌',
+              '(┛ಠДಠ)┛彡┻━┻',
+              '(ノÒ益Ó)ノ彡▔▔▏']
 
 def res_format_listwebs(webids, webnames, header_idcol, header_webcol):
     """ Result formatter for listwebs command """
@@ -125,11 +135,55 @@ def res_format_search(search_results, keyword):
     # Return a FormattedText object to the caller
     return ptk.formatted_text.FormattedText(fmt_list)
 
+
 def res_format_error(msg):
     """ Result formatter for error messages """
 
-    err_msg = 'ERROR: ' + msg
+    emoji   = random.choice(ERR_EMOJIS)
+    err_msg = 'ERROR: ' + msg + f'  {emoji}'
     fmt_msg = [(FMT_STYLES[FMT_STYLES_ERR_KEY], err_msg)]
     fmt_obj = ptk.formatted_text.FormattedText(fmt_msg)
 
+    return fmt_obj
+
+
+def res_format_setweb(msg):
+    """ Result formatter for setweb command """
+
+    fmt_msg = [(FMT_STYLES[FMT_STYLES_HDR_KEY], msg)]
+    fmt_obj = ptk.formatted_text.FormattedText(fmt_msg)
+
+    return fmt_obj
+
+
+def res_format_help_mult(result_dict):
+    """ Result formatter for help command that returns multiple results"""
+
+    ljust_len   = max([len(k) for k in result_dict.keys()]) + 4
+    cmd_keys_lj = [k.ljust(ljust_len) for k in result_dict.keys()]
+
+    fmt_list = []
+
+    # Loop through each (left-justified)key and value pairs, format them
+    # appropriately and add them to the fmt_list
+    for cmd, desc in zip(cmd_keys_lj, result_dict.values()):
+        fmt_list.append((FMT_STYLES[FMT_STYLES_HL_KEY], cmd))           # Highlighted command name
+        fmt_list.append((FMT_STYLES[FMT_STYLES_NRM_KEY], desc + '\n'))  # Normal description
+
+    fmt_list.append(('', '\n'))   # Insert blank lines (style doesn't matter as it's invisible)
+    fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
+    return fmt_obj
+
+
+def res_format_help_single(result_dict):
+    """ Result formatter for help command that returns a single result """
+
+    fmt_list = [None, None]
+    cmd = list(result_dict.keys())[0]    # Only a single result, so a single key in the list
+    descr = result_dict[cmd]
+
+    fmt_list[0] = (FMT_STYLES[FMT_STYLES_HL_KEY], cmd + '\n')
+    fmt_list[1] = (FMT_STYLES[FMT_STYLES_NRM_KEY], descr + '\n\n')
+
+    fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
     return fmt_obj
