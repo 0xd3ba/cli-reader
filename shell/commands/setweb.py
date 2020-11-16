@@ -1,51 +1,55 @@
 # setweb.py -- Sets the default website to use
 
 import shell.cmdbase
+import shell.format_utils.result_formatter as res_fmt
 import crawlers.cfactory as cfactory
-import shlex
-from prompt_toolkit import print_formatted_text
 
 
 class SetWebCommand(shell.cmdbase.CommandBase):
     """
     setweb -- Sets the website to use for searches
-    Usage: setweb [ -w | --website ] <website>
+    Usage: setweb <website>
 
-    Example: setweb -w wuxiaworld
+    Example: setweb wuxiaworld
     """
-    DESCRIPTION = 'Set the website to use for searches'
+    DESCRIPTION = 'Set the website to use for reading/searching'
+    ERR_INVALID_WEB_MSG = 'Website entered is not a valid ID. Please check using "listwebs"'
+    ERR_NO_WEB_MSG = "Website can't be changed if you don't enter a website ID ?"
+    WEB_CHANGE_MSG = "Website has been changed to: "
 
     def __init__(self):
         super().__init__()
         self.description = self.DESCRIPTION
-        self.arg_parser.add_argument(
-            '-w', '--website', type=str, required=True,
-            help='Name of the website.Use listwebs command to know supported ones.')
 
     def help(self):
         return self.__doc__
 
     def execute(self, cmd_args):
-        args = self._parse_args(cmd_args)
-        if args is None:
-            return (-1, "error")
-        crawler = cfactory.CrawlerFactory()
-        all_websites = crawler.SUPPORTED_WEBS.keys()
-        if args.website in all_websites:
-            cfactory.CrawlerFactory.DEFAULT_WEB = args.website
-            result = "Default Website has been changed to : " + crawler.DEFAULT_WEB
-            return 0, self._parse_result(result)
-        else:
-            result = "Opps!! Default can't ba changed : Website Not Supported."
-            return -1, self._parse_result(result)
+        """
+        Check if the entered website is a valid supported website
+        If yes, then change to it; else throw an error
+        """
+        if not cmd_args:
+            return self.CMD_STATUS_ERROR, res_fmt.res_format_error(self.ERR_NO_WEB_MSG)
+
+        # Get the website -- The first item in the list
+        web_id = cmd_args[0]
+        supp_websites = cfactory.CrawlerFactory.SUPPORTED_WEBS
+
+        if web_id not in supp_websites.keys():
+            return self.CMD_STATUS_ERROR, res_fmt.res_format_error(self.ERR_INVALID_WEB_MSG)
+
+        # A valid website, change the static class variable of the crawler factory
+        cfactory.CrawlerFactory.DEFAULT_WEB = web_id
+
+        website_name = supp_websites[web_id][0]
+        succ_msg = self.WEB_CHANGE_MSG + web_id + f' ({website_name})'
+
+        return self.CMD_STATUS_SUCCESS, self._parse_result(succ_msg)
+
 
     def _parse_args(self, cmd_args):
-        try:
-            args = self.arg_parser.parse_args(cmd_args)
-        except:
-            return None
-        return args
+        pass
 
     def _parse_result(self, result):
-        print_formatted_text(result)
-        return result
+        return res_fmt.res_format_setweb(result)

@@ -14,7 +14,7 @@ class SearchCommand(shell.cmdbase.CommandBase):
     Example: search --novel "gods"
     """
     DESCRIPTION = 'Searches for novels based on a keyword that is entered'
-    ERR_NO_KEYWORD_MSG = 'Ummm...please enter a keyword to search ? ( ͡ಠ ʖ̯ ͡ಠ)'
+    ERR_NO_KEYWORD_MSG = 'Ummm...please enter a keyword to search ?'
 
     def __init__(self):
         super().__init__()
