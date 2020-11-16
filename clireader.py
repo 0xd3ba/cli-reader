@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 import sys
 import shell.cmdfactory as cmdfactory
+import shell.cmdbase as cmdbase
 from crawlers.cfactory import CrawlerFactory as cf
 '''
 following are the imports from prompt-tookit
@@ -12,6 +13,7 @@ from prompt_toolkit.styles import Style  # for styling the prompt
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit import PromptSession
+from prompt_toolkit import print_formatted_text
 
 PROMPT_USERNAME = 'clireader'
 style = Style.from_dict({
@@ -66,8 +68,9 @@ if __name__ == '__main__':
             cmd_obj = cmdFactoryObj.get_command(args[0])
             rest = args[1:] if len_args != 1 else []
             status_code, result = cmd_obj.execute(rest)
+            if status_code != cmdbase.CommandBase.CMD_STATUS_READ_SUCCESS:
+                print_formatted_text(result)
         prompt_message[PROMPT_NOVEL_INDEX][-1] = cf.DEFAULT_WEB
-        print(cf.DEFAULT_WEB)
         # print(status_code)
 
         # TODO: Result will be shown on some kind of UI so will call a method being made by arnab meanshile printing result on Standard Output

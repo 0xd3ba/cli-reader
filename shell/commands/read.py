@@ -1,7 +1,8 @@
 # read.py -- Read a chapter of some specified novel
 
-import shell.cmdbase
+import shell.cmdbase as cmdbase
 import crawlers.cfactory as cfactory
+import crawlers.cbase as cbase
 from crawlers.cutils import chap_utils as cu
 from shell.format_utils import result_formatter as rf
 '''
@@ -24,7 +25,7 @@ from prompt_toolkit.widgets import Box, MenuContainer, FormattedTextToolbar
 from prompt_toolkit.layout.layout import Layout
 
 
-class ReadCommand(shell.cmdbase.CommandBase):
+class ReadCommand(cmdbase.CommandBase):
     """
     Opens a Reader for a given Chapter of given novel
     """
@@ -196,9 +197,7 @@ class ReadCommand(shell.cmdbase.CommandBase):
         '''
         args = self._parse_args(cmd_args)
         if args is None:
-            return -1, self.PARSING_ERR_MSG
-
-        print(self.novel, self.curr_chap_num)
+            return cmdbase.CommandBase.CMD_STATUS_ERROR, rf.res_format_error(self.PARSING_ERR_MSG)
         crawler = cfactory.CrawlerFactory()
         self.web_crawler = crawler.get_crawler(self.novel)
         self.key_init()
@@ -207,9 +206,11 @@ class ReadCommand(shell.cmdbase.CommandBase):
             self.changebuffercontent()
             self.updateTopMenu()
             self.run()
-            return 1, None
+            return cmdbase.CommandBase.CMD_STATUS_READ_SUCCESS, None
+        elif status == cbase.CrawlerBase.CRAWLER_GET_MULT_RES:
+            return cmdbase.CommandBase.CMD_STATUS_ERROR, rf.res_format_search(res, self.novel)
         else:
-            return -1, res
+            return cmdbase.CommandBase.CMD_STATUS_ERROR, rf.res_format_error(res)
 
     def _parse_args(self, cmd_args):
         '''
