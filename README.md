@@ -1,4 +1,7 @@
 # cliReader
+
+![banner_clireader.png](images/banner.png)
+
 An interactive reader for reading light novels online, right from the *terminal* !<br/>
 **Note**: This is not a downloader, crawlers for downloading already exist; 
 For example, [lightnovel-crawler](https://github.com/dipu-bd/lightnovel-crawler).
@@ -11,6 +14,7 @@ The following websites are currently supported (with their corresponding IDs tha
 |----------|:-------------|
 | `wuxiaworld` |  https://www.wuxiaworld.com |
 | `lnworld` |    https://www.lightnovelworld.com  |
+
 (Support for other websites will be added in future)
 
 ### Commands List
