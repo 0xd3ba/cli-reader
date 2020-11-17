@@ -32,14 +32,15 @@ can use to interact with the in-built shell for searching novels, reading...etc.
 | `quit` | Quits the application    |
 <br/>
 
-### Themes
+### Themes Supported
 ![banner_clireader.png](https://github.com/0xd3ba/cli-reader/blob/main/img/themes.png?raw=true)
 
 There are three themes currently supported:
 - `minimal-gray` (Default)
 - `retro-green`
 - `ubuntu-purple`
-You can switch between them using `settheme <theme_id>` command
+
+You can switch between them using `settheme <theme_id>` command.
 
 ## Installation Instructions
 
