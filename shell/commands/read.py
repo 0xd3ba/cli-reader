@@ -77,12 +77,7 @@ class ReadCommand(cmdbase.CommandBase):
 
         self.novel_menu = Window(content=FormattedTextControl(text=str(
             self.novel)), height=2, align=WindowAlign.CENTER, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_TOP_MENU_KEY])
-        # forms windows layout containing topmenu , buffer control and bottom menu
-        # self.content = HSplit([
-        #     self.top_menu,
-        #     Window(content=self.buf_control, wrap_lines=True),
-        #     self.menu
-        # ], padding_char='-', padding=1, padding_style='#ffff00')
+
         self.content = HSplit([
             HSplit([self.novel_menu,
                     self.top_menu, ]),
@@ -95,7 +90,9 @@ class ReadCommand(cmdbase.CommandBase):
         self.layout = Layout(self.container)
 
     def _next_chapter(self):
-        # get the next chapter result and crawler
+        '''
+        get the next chapter result and crawler
+        '''
         status, result, newcrawler = self.web_crawler.next_chapter()
         # if status = 0 we got valid next chapter
         if status == 0:
@@ -115,7 +112,9 @@ class ReadCommand(cmdbase.CommandBase):
         return status
 
     def _prev_chapter(self):
-        # get the next chapter result and crawler
+        '''
+        get the previous chapter result and crawler
+        '''
         status, result, newcrawler = self.web_crawler.previous_chapter()
         # if status = 0 we got valid prev chapter
         if status == 0:
@@ -133,7 +132,10 @@ class ReadCommand(cmdbase.CommandBase):
             self.chapter_content = result + self.RELOAD_MESG
         return status
 
-    def key_init(self):
+    def _key_init(self):
+        '''
+        Initializes and defines all key bindings
+        '''
         @self.key_binding.add('c-q')
         def exit_(event):
             event.app.exit()
@@ -143,14 +145,14 @@ class ReadCommand(cmdbase.CommandBase):
             # reload the chapter content to last valid content
             self.chapter_content = '\n\n'.join(
                 self.chapter[cu.GET_CHAP_CONTENTS_KEY])
-            self.changebuffercontent()
+            self._changebuffercontent()
 
         @self.key_binding.add('c-t')
         def startreload_(event):
             self.curr_chap_num = self.starting_chap
-            self.read_current_chapter()
-            self.changebuffercontent()
-            self.updateTopMenu()
+            self._read_current_chapter()
+            self._changebuffercontent()
+            self._updateTopMenu()
 
         @self.key_binding.add('c-n')
         def next_(event):
@@ -158,16 +160,19 @@ class ReadCommand(cmdbase.CommandBase):
                 status = self._next_chapter()
                 if status == 0:
                     self.next_chap = None
-            self.changebuffercontent()
-            self.updateTopMenu()
+            self._changebuffercontent()
+            self._updateTopMenu()
 
         @self.key_binding.add('c-p')
         def prev_(event):
             self._prev_chapter()
-            self.updateTopMenu()
-            self.changebuffercontent()
+            self._updateTopMenu()
+            self._changebuffercontent()
 
-    def read_current_chapter(self):
+    def _read_current_chapter(self):
+        '''
+        read the current chapter number from crawler and updates the buffer
+        '''
         status, result = self.web_crawler.get_chapter(self.curr_chap_num)
         if status != 0:
             return status, result
@@ -178,20 +183,32 @@ class ReadCommand(cmdbase.CommandBase):
             self.chapter[cu.GET_CHAP_CONTENTS_KEY])
         return 0, result
 
-    def updateTopMenu(self):
+    def _updateTopMenu(self):
+        '''
+        Update Novel and Chapter Name
+        '''
         self.novel_menu.content.text = '\n' + str(self.novel)
         self.top_menu.content.text = '\n' + str(self.curr_chap_num)
 
-    def changebuffercontent(self):
+    def _changebuffercontent(self):
+        '''
+        Changes buffer content with new content
+        '''
         self.buffer.set_document(
             Document(self.chapter_content, 0), bypass_readonly=True)
 
-    def run(self):
+    def _run(self):
+        '''
+        Runs the Application
+        '''
         self.application = Application(
             layout=self.layout, key_bindings=self.key_binding, full_screen=True, mouse_support=False,)
         self.application.run()
 
     def help(self):
+        '''
+        returns the doc string of reader module
+        '''
         return self.__doc__
 
     def execute(self, cmd_args):
@@ -203,12 +220,12 @@ class ReadCommand(cmdbase.CommandBase):
             return cmdbase.CommandBase.CMD_STATUS_ERROR, rf.res_format_error(self.PARSING_ERR_MSG)
         crawler = cfactory.CrawlerFactory()
         self.web_crawler = crawler.get_crawler(self.novel)
-        self.key_init()
-        status, res = self.read_current_chapter()
+        self._key_init()
+        status, res = self._read_current_chapter()
         if status == 0:
-            self.changebuffercontent()
-            self.updateTopMenu()
-            self.run()
+            self._changebuffercontent()
+            self._updateTopMenu()
+            self._run()
             return cmdbase.CommandBase.CMD_STATUS_READ_SUCCESS, None
         elif status == cbase.CrawlerBase.CRAWLER_GET_MULT_RES:
             return cmdbase.CommandBase.CMD_STATUS_ERROR, rf.res_format_search(res, self.novel)
