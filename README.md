@@ -32,6 +32,15 @@ can use to interact with the in-built shell for searching novels, reading...etc.
 | `quit` | Quits the application    |
 <br/>
 
+### Themes
+![banner_clireader.png](https://github.com/0xd3ba/cli-reader/blob/main/img/themes.png?raw=true)
+
+There are three themes currently supported:
+- `minimal-gray` (Default)
+- `retro-green`
+- `ubuntu-purple`
+You can switch between them using `settheme <theme_id>` command
+
 ## Installation Instructions
 
 Make sure you have `Python3 (v3.7+)` installed on your system. If not installed, it will
