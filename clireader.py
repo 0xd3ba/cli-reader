@@ -40,7 +40,7 @@ prompt_message = [
     ['class:colon',    ':'],
 ]
 command_completer = WordCompleter(
-    ['help', 'listwebs', 'search', 'read', 'setweb', 'quit'])
+    ['help', 'listwebs', 'search', 'read', 'setweb', 'settheme', 'quit'])
 
 if __name__ == '__main__':
     session = PromptSession()
@@ -49,14 +49,12 @@ if __name__ == '__main__':
     sys.path.append('shell/')
 
     cmdFactoryObj = cmdfactory.CommandFactory()
-    # TODO: Start the shell
     while True:
-        # print("CliReader:>",sep="\t")
         try:
             cmd = session.prompt(
                 prompt_message, style=style, completer=command_completer, auto_suggest=AutoSuggestFromHistory())
         except KeyboardInterrupt:
-            print("Use quit Command to quit the shell")
+            print("Use quit command to quit the shell")
             continue
         except EOFError:
             break
@@ -71,7 +69,3 @@ if __name__ == '__main__':
             if status_code != cmdbase.CommandBase.CMD_STATUS_READ_SUCCESS:
                 print_formatted_text(result)
         prompt_message[PROMPT_NOVEL_INDEX][-1] = cf.DEFAULT_WEB
-        # print(status_code)
-
-        # TODO: Result will be shown on some kind of UI so will call a method being made by arnab meanshile printing result on Standard Output
-        # print(result)
