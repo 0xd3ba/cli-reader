@@ -28,11 +28,14 @@ from prompt_toolkit.layout.layout import Layout
 class ReadCommand(cmdbase.CommandBase):
     """
     Opens a Reader for a given Chapter of given novel
+    Usage: read -n <novelname> [-c <chapter number>]
+
+    Example: read -n against the god -c 30
     """
     DESCRIPTION = 'Reads the given Chapter'
     RELOAD_MESG = '\nPress Control-r to load the latest valid chapter.\n' + \
         '(OR), Press Control-t to load the first chapter you started with.\n'
-    PARSING_ERR_MSG = "Error in Parsing Arguments"
+    PARSING_ERR_MSG = "Opps...please give a <novel name> with -n flag "
 
     def __init__(self):
         super().__init__()
@@ -84,7 +87,7 @@ class ReadCommand(cmdbase.CommandBase):
             HSplit([self.novel_menu,
                     self.top_menu, ]),
             Box(Window(content=self.buf_control, wrap_lines=True,
-                       cursorline=True, align=WindowAlign.LEFT, always_hide_cursor=True, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_CONTENT_KEY]),
+                       cursorline=True, always_hide_cursor=True, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_CONTENT_KEY]),
                 padding_left=1, padding_right=1),
             self.menu
         ], style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BACKGROUND_KEY], padding=1, padding_style='bg:#263238')
@@ -185,7 +188,7 @@ class ReadCommand(cmdbase.CommandBase):
 
     def run(self):
         self.application = Application(
-            layout=self.layout, key_bindings=self.key_binding, full_screen=True)
+            layout=self.layout, key_bindings=self.key_binding, full_screen=True, mouse_support=False,)
         self.application.run()
 
     def help(self):
