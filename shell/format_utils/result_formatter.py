@@ -24,13 +24,13 @@ CONTENT_STYLE = ['#68e182 bg:#10505c',
                  '#be9fb6 bg:#5d1049',
                  '#b0bec5 bg:#263238']
 
-TOP_MENU_STYLE = ['bold #eceff1 bg:#10505c',
-                  'bold #ffebee bg:#5d1049',
-                  'bold #f5f5f5 bg:#263238']
+TOP_MENU_STYLE = ['#eceff1 bg:#10505c',
+                  '#ffebee bg:#5d1049',
+                  '#f5f5f5 bg:#263238']
 
-TOP_SUB_MENU_STYLE = ['bold #ffaf49 bg:#10505c',
-                      'bold #e30425 bg:#5d1049',
-                      'bold #00b0ff bg:#263238']
+TOP_SUB_MENU_STYLE = ['#ffaf49 bg:#10505c',
+                      '#e30425 bg:#5d1049',
+                      '#00b0ff bg:#263238']
 
 BOTTOM_MENU_STYLE = ['#03abf7 bg:#10505c',
                      '#ffaf49 bg:#5d1049',
@@ -202,7 +202,8 @@ def res_format_search(search_results, keyword):
 
             # Convert value to a string if it is a list
             val = '  '.join(val) if isinstance(val, list) else val
-            fmt_list[fmt_lidx +1] = (FMT_STYLES[FMT_STYLES_NRM_KEY], str(val) + '\n')
+            fmt_list[fmt_lidx +
+                     1] = (FMT_STYLES[FMT_STYLES_NRM_KEY], str(val) + '\n')
 
             fmt_lidx += 2
 
