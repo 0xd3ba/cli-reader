@@ -1,6 +1,6 @@
 # cliReader
 
-![banner_clireader.png](images/banner.png)
+![banner_clireader.png](https://raw.githubusercontent.com/0xd3ba/cli-reader/main/img/banner.png)
 
 An interactive reader for reading light novels online, right from the *terminal* !<br/>
 **Note**: This is not a downloader, crawlers for downloading already exist; 
