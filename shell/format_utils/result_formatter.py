@@ -1,6 +1,7 @@
 # result_formatter.py -- Formats the results of the commands that needs to return output
 
 import random
+from pyfiglet import Figlet
 import prompt_toolkit as ptk
 
 
@@ -17,23 +18,23 @@ HIGHLIGHT_TEXT_STYLE = ''
 
 # Theme related stuff
 BACKGROUND_STYLE = ['bg:#10505c',
-                    'bg:#5d1049',
+                    'bg:#712369',
                     'bg:#263238']
 
 CONTENT_STYLE = ['#68e182 bg:#10505c',
-                 '#be9fb6 bg:#5d1049',
+                 '#be9fb6 bg:#712369',
                  '#b0bec5 bg:#263238']
 
 TOP_MENU_STYLE = ['#eceff1 bg:#10505c',
-                  '#ffebee bg:#5d1049',
+                  '#eeeeec bg:#712369',
                   '#f5f5f5 bg:#263238']
 
 TOP_SUB_MENU_STYLE = ['#ffaf49 bg:#10505c',
-                      '#e30425 bg:#5d1049',
+                      '#ef2929 bg:#712369',
                       '#00b0ff bg:#263238']
 
 BOTTOM_MENU_STYLE = ['#03abf7 bg:#10505c',
-                     '#ffaf49 bg:#5d1049',
+                     '#8ae234 bg:#712369',
                      '#EF5350 bg:#263238']
 
 # Border to separate header from data
@@ -118,6 +119,34 @@ ERR_EMOJIS = ['(╬ಠ益ಠ)',
               '┐(͠≖ ͜ʖ͠≖)┌',
               '(┛ಠДಠ)┛彡┻━┻',
               '(ノÒ益Ó)ノ彡▔▔▏']
+
+
+
+CLI_BANNER_MSG = 'cLiReader'
+CLI_BANNER_DES = 'An interactive command-line reader for reading \nlight novels online  ~(˘▾˘~)'
+CLI_BANNER_INF = 'Use "help" to know information about commands and\ntheir usages. Have fun !'
+CLI_BANNER_SEP_NCHAR = 50
+CLI_BANNER_SEP = '=' * CLI_BANNER_SEP_NCHAR
+CLI_BANNER_FNT = 'standard'
+CLI_BANNER_VER = '(version 0.1)'
+
+def get_greet_msg():
+    """ Prepare the greeting message to return to the caller """
+
+    fmt_list = []
+    figlet_obj = Figlet(CLI_BANNER_FNT)
+    banner_msg = figlet_obj.renderText(CLI_BANNER_MSG)
+    center_width = len(banner_msg)
+
+    fmt_list.append((FMT_STYLES[FMT_STYLES_ERR_KEY], CLI_BANNER_SEP + '\n'))
+    fmt_list.append((FMT_STYLES[FMT_STYLES_ERR_KEY], banner_msg))
+    fmt_list.append((FMT_STYLES[FMT_STYLES_ERR_KEY], CLI_BANNER_VER.rjust(CLI_BANNER_SEP_NCHAR) + '\n\n'))
+    fmt_list.append((FMT_STYLES[FMT_STYLES_NRM_KEY], CLI_BANNER_DES+'\n\n'))
+    fmt_list.append((FMT_STYLES[FMT_STYLES_NRM_KEY], CLI_BANNER_INF + '\n'))
+    fmt_list.append((FMT_STYLES[FMT_STYLES_ERR_KEY], CLI_BANNER_SEP + '\n'))
+
+    fmt_obj = ptk.formatted_text.FormattedText(fmt_list)
+    return fmt_obj
 
 
 def res_format_listwebs(webids, webnames, header_idcol, header_webcol):

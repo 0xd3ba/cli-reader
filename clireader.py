@@ -4,7 +4,10 @@ from __future__ import unicode_literals
 import sys
 import shell.cmdfactory as cmdfactory
 import shell.cmdbase as cmdbase
+import shell.format_utils.result_formatter as res_fmt
 from crawlers.cfactory import CrawlerFactory as cf
+
+
 '''
 following are the imports from prompt-tookit
 for AutoSuggestion and World Completion and session
@@ -14,6 +17,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit import PromptSession
 from prompt_toolkit import print_formatted_text
+
 
 PROMPT_USERNAME = 'clireader'
 style = Style.from_dict({
@@ -32,7 +36,9 @@ style = Style.from_dict({
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
+
 PROMPT_NOVEL_INDEX = 2
+
 prompt_message = [
     ['class:username', PROMPT_USERNAME],
     ['class:at',       '@'],
@@ -42,11 +48,17 @@ prompt_message = [
 command_completer = WordCompleter(
     ['help', 'listwebs', 'search', 'read', 'setweb', 'settheme', 'quit'])
 
+
+
 if __name__ == '__main__':
     session = PromptSession()
     # Add new path variables
     sys.path.append('crawlers/')
     sys.path.append('shell/')
+
+    # Print the greeting message
+    greet_msg = res_fmt.get_greet_msg()
+    print_formatted_text(greet_msg)
 
     cmdFactoryObj = cmdfactory.CommandFactory()
     while True:

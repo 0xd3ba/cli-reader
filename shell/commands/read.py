@@ -33,8 +33,8 @@ class ReadCommand(cmdbase.CommandBase):
     Example: read -n against the god -c 30
     """
     DESCRIPTION = 'Reads the given Chapter'
-    RELOAD_MESG = '\n\nPress Control-R to load the latest valid chapter.\n' + \
-        '(OR), Press Control-T to load the first chapter you started with.\n'
+    RELOAD_MESG = '\n\nPress Ctrl-R to load the latest valid chapter.\n' + \
+        '(OR), Press Ctrl-T to load the first chapter you started with.\n'
     PARSING_ERR_MSG = "Opps...please give a <novel name> with -n flag"
 
     def __init__(self):
@@ -67,8 +67,7 @@ class ReadCommand(cmdbase.CommandBase):
         self.buf_control = BufferControl(
             buffer=self.buffer, key_bindings=self.key_binding)
         # initialize bottom menu content
-        self.menu_content = "[Menu Controls]\nCtrl-Q : Back | Ctrl-N : Next Chapter | Ctrl-P : Previous Chapter |" +\
-                            " Ctrl-R : Load Last Valid Chapter | Ctrl-T : Load with Starting Chapter\n\n"
+        self.menu_content = "[ Menu Controls ]\nCtrl-Q : Back | Ctrl-N : Next Chapter | Ctrl-P : Previous Chapter \n\n"
         self.menu = Window(content=FormattedTextControl(
             text=self.menu_content), height=3, align=WindowAlign.CENTER, style=rf.READER_FMT_STYLES[rf.READER_FMT_STYLES_INDEX][rf.READER_FMT_STYLES_BOTTOM_MENU_KEY])
         # initialize top menu object
