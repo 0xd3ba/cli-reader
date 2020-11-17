@@ -18,16 +18,16 @@ from prompt_toolkit import print_formatted_text
 PROMPT_USERNAME = 'clireader'
 style = Style.from_dict({
     # User input (default text).
-    '':          '#263238',
+    '':          '#b0bec5',
 
     # Prompt.
-    'username': '#EACE6A',
-    'at':       '#00aa00',
-    'colon':    '#0000aa',
-    'pound':    '#00aa00',
-    'novelname':     '#00ffff',
+    'username':  '#b0bec5',
+    'at':        '#b0bec5',
+    'colon':     '#0000aa',
+    'pound':     '#00aa00',
+    'novelname': '#e30425',
     'path':     'ansicyan underline',
-    'completion-menu.completion': 'bg:#008888 #ffffff',
+    'completion-menu.completion': 'bg:#9a9a9a #ffffff',
     'completion-menu.completion.current': 'bg:#00aaaa #000000',
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',

@@ -7,6 +7,7 @@ import shell.commands.read     as read
 import shell.commands.setweb   as setweb
 import shell.commands.search   as search
 import shell.commands.quit     as quit
+import shell.commands.settheme as settheme
 
 class CommandFactory:
     """
@@ -19,6 +20,7 @@ class CommandFactory:
         'help':     help.HelpCommand,           # Display information about the command
         'listwebs': listwebs.ListWebsCommand,   # List the supported websites
         'read':     read.ReadCommand,           # Read the specified novel
+        'settheme': settheme.SetThemeCommand,   # Sets the theme of the shell
         'setweb':   setweb.SetWebCommand,       # Set the default website to use
         'search':   search.SearchCommand,       # Search novel in a website (if specified), else use default website
         'quit':     quit.QuitCommand            # Exit the shell

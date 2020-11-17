@@ -11,7 +11,7 @@ class SearchCommand(shell.cmdbase.CommandBase):
     search -- Searches for novels on the website that was set using setweb command
     Usage: search <keyword>
 
-    Example: search --novel "gods"
+    Example: search gods
     """
     DESCRIPTION = 'Searches for novels based on a keyword that is entered'
     ERR_NO_KEYWORD_MSG = 'Ummm...please enter a keyword to search ?'
